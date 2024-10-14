@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    image:   # Замените на имя вашего образа приложения на Go
+    build:
+      context: .               # Укажите путь к вашему Dockerfile
+      dockerfile: Dockerfile    # Укажите имя вашего Dockerfile, если оно отличается
+    ports:
+      - "8080:8080"             # Проброс порта
+    environment:
+      - DATABASE_URL=host=postgres-db port=5432 user=postgres dbname=todo_list sslmode=disable password=1234
+    depends_on:
+      - postgres-db             # Зависимость от базы данных
+
+  postgres-db:
+    image: postgres:latest      # Используем последний образ PostgreSQL
+    environment:
+      POSTGRES_USER: postgres    # Имя пользователя PostgreSQL
+      POSTGRES_PASSWORD: 1234     # Пароль для пользователя PostgreSQL
+      POSTGRES_DB: todo_list      # Имя базы данных, которую нужно создать
+    ports:
+      - "5432:5432"              # Проброс порта PostgreSQL

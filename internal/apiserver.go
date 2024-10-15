@@ -8,13 +8,14 @@ import (
 	"TODO-List/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"os"
 )
 
 func Run() {
 
 	port := os.Getenv("PORT")
-
+	log.Printf("server running on port ----------------------%s", port)
 	database, err := db.LoadDatabase()
 	defer func(database *sqlx.DB) {
 		err := database.Close()
@@ -36,8 +37,8 @@ func Run() {
 	r := gin.Default()
 	userHandler.RegisterEndpointsForUser(r)
 	taskHandler.RegisterEndpointsForTasks(r)
-
 	err = r.Run(":" + port)
+
 	if err != nil {
 		panic(err)
 	}

@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   app:
-    image:   # Замените на имя вашего образа приложения на Go
     build:
       context: .               # Укажите путь к вашему Dockerfile
       dockerfile: Dockerfile    # Укажите имя вашего Dockerfile, если оно отличается
@@ -10,6 +9,7 @@ services:
       - "8080:8080"             # Проброс порта
     environment:
       - DATABASE_URL=host=postgres-db port=5432 user=postgres dbname=todo_list sslmode=disable password=1234
+      - PORT=8080
     depends_on:
       - postgres-db             # Зависимость от базы данных
 
@@ -21,3 +21,11 @@ services:
       POSTGRES_DB: todo_list      # Имя базы данных, которую нужно создать
     ports:
       - "5432:5432"              # Проброс порта PostgreSQL
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      - postgres-db
+    volumes:
+      - C:\Users\сенька\GolandProjects\TODO-List\internal\db\migrations:/database
+    command:
+      [ "-path", "/database", "-database",  "postgres://postgres:1234@postgres-db:5432/todo_list?sslmode=disable", "up" ]

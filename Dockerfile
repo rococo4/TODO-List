@@ -1,5 +1,5 @@
 # Указываем базовый образ
-FROM golang:1.21.4 AS builder
+FROM golang:1.23.1 AS builder
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -7,11 +7,13 @@ WORKDIR /app
 # Копируем go.mod и go.sum для кэширования зависимостей
 COPY go.mod go.sum ./
 
+
 # Загружаем зависимости
 RUN go mod download
 
 # Копируем весь исходный код в контейнер
 COPY . .
+
 
 # Собираем приложение
 RUN CGO_ENABLED=0 GOOS=linux go build -o myapp cmd/main.go

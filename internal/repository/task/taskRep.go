@@ -13,14 +13,10 @@ func NewTaskRepository(db *sqlx.DB) *Repository {
 	return &Repository{db}
 }
 func (r *Repository) Create(task model.Task) (*model.Task, error) {
-	result, err := r.db.NamedExec(
-		"INSERT INTO tasks(name, description,expired_at) VALUES (:name, :description, :expired_at)", task)
-	if err != nil {
-		return nil, err
-	}
 	var createdTask model.Task
-	taskId, err := result.LastInsertId()
-	err = r.db.Get(&createdTask, "SELECT * FROM tasks WHERE id=$1", taskId)
+	err := r.db.QueryRowx(
+		"INSERT INTO tasks(name, description,expired_at) VALUES ($1, $2, $3) RETURNING id, created_at, expired_at, name, description",
+		task.Name, task.Description, task.CreatedAt).StructScan(&createdTask)
 	if err != nil {
 		return nil, err
 	}

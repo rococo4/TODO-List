@@ -26,6 +26,7 @@ func Run() {
 	if err != nil {
 		panic(err)
 	}
+
 	userRepository := user.NewUserRepository(database)
 	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandler(userService)

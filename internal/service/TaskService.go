@@ -1,6 +1,7 @@
 package service
 
 import (
+	"TODO-List/internal/auth"
 	"TODO-List/internal/converter"
 	"TODO-List/internal/model/request"
 	"TODO-List/internal/repository/task"
@@ -17,7 +18,17 @@ func NewTaskService(repo *task.Repository) *TaskService {
 	return &TaskService{repo: repo}
 }
 func (service *TaskService) CreateTask(context *gin.Context) {
+
+	token := context.GetHeader("Authorization")
+	userId, err := auth.GetUserIdFromJwt(token)
+	if _, err := service.repo.Find(userId); err != nil {
+		context.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	}
+
 	var taskRequest request.CreateTaskRequest
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+	}
 
 	if err := context.ShouldBindJSON(taskRequest); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -29,6 +40,8 @@ func (service *TaskService) CreateTask(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	entity.UserId = userId
 	create, err := service.repo.Create(*entity)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

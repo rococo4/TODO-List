@@ -8,4 +8,5 @@ type Task struct {
 	ExpiredAt   time.Time `db:"expired_at" `
 	Name        string    `db:"name" `
 	Description string    `db:"description" `
+	UserId      int       `db:"user_id" `
 }

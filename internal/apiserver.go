@@ -32,7 +32,7 @@ func Run() {
 	userHandler := handler.NewUserHandler(userService)
 
 	taskRepository := task.NewTaskRepository(database)
-	taskService := service.NewTaskService(taskRepository)
+	taskService := service.NewTaskService(taskRepository, userRepository)
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	r := gin.Default()

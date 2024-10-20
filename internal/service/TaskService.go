@@ -5,23 +5,27 @@ import (
 	"TODO-List/internal/converter"
 	"TODO-List/internal/model/request"
 	"TODO-List/internal/repository/task"
+	"TODO-List/internal/repository/user"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
 type TaskService struct {
-	repo *task.Repository
+	taskRepository *task.Repository
+	userRepository *user.Repository
 }
 
-func NewTaskService(repo *task.Repository) *TaskService {
-	return &TaskService{repo: repo}
+func NewTaskService(taskRepo *task.Repository, userRepo *user.Repository) *TaskService {
+	return &TaskService{taskRepository: taskRepo, userRepository: userRepo}
 }
 func (service *TaskService) CreateTask(context *gin.Context) {
 
 	token := context.GetHeader("Authorization")
+
 	userId, err := auth.GetUserIdFromJwt(token)
-	if _, err := service.repo.Find(userId); err != nil {
+	userEntity, err := service.userRepository.Find(userId)
+	if err != nil {
 		context.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 	}
 
@@ -30,24 +34,25 @@ func (service *TaskService) CreateTask(context *gin.Context) {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 	}
 
-	if err := context.ShouldBindJSON(taskRequest); err != nil {
+	if err := context.ShouldBindJSON(&taskRequest); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	entity, err := converter.ValidateConvertRequestToEntity(&taskRequest)
+	entity, err := converter.ConvertCreateTaskRequestToTaskEntity(&taskRequest)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	entity.UserId = userId
-	create, err := service.repo.Create(*entity)
+	create, err := service.taskRepository.Create(*entity)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	taskResponse, err := converter.ConvertEntityToResponse(create)
+
+	taskResponse, err := converter.ConvertTaskEntityToTaskResponse(create, userEntity)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -59,9 +64,12 @@ func (service *TaskService) GetTask(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	taskEntity, err := service.repo.Find(taskId)
+	taskEntity, err := service.taskRepository.Find(taskId)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	context.JSON(http.StatusOK, taskEntity)
+
+	userEntity, err := service.userRepository.Find(taskEntity.UserId)
+	taskResponse, err := converter.ConvertTaskEntityToTaskResponse(taskEntity, userEntity)
+	context.JSON(http.StatusOK, taskResponse)
 }

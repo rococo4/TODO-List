@@ -15,8 +15,8 @@ func NewTaskRepository(db *sqlx.DB) *Repository {
 func (r *Repository) Create(task model.Task) (*model.Task, error) {
 	var createdTask model.Task
 	err := r.db.QueryRowx(
-		"INSERT INTO tasks(name, description,expired_at) VALUES ($1, $2, $3) RETURNING id, created_at, expired_at, name, description",
-		task.Name, task.Description, task.CreatedAt).StructScan(&createdTask)
+		"INSERT INTO tasks(name, description,expired_at, user_id) VALUES ($1, $2, $3, $4) RETURNING id, created_at, expired_at, name, description",
+		task.Name, task.Description, task.CreatedAt, task.UserId).StructScan(&createdTask)
 	if err != nil {
 		return nil, err
 	}

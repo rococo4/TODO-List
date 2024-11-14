@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration-job
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: migrate/migrate:latest  # Docker-образ с инструментом миграций
+          command:
+            [ "migrate",
+              "-path", "/database",
+              "-database", "postgres://postgres:1234@postgres-db:5432/todo_list?sslmode=disable",
+              "up"
+            ]
+          volumeMounts:
+            - name: migration-files
+              mountPath: /database
+      volumes:
+        - name: migration-files
+          hostPath:
+            path: /Users/mac/GolandProjects/TODO-List/internal/db/migrations
+      restartPolicy: Never

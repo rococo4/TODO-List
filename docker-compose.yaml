@@ -26,6 +26,6 @@ services:
     depends_on:
       - postgres-db
     volumes:
-      - C:\Users\сенька\GolandProjects\TODO-List\internal\db\migrations:/database
+      - ./internal/db/migrations:/database
     command:
       [ "-path", "/database", "-database",  "postgres://postgres:1234@postgres-db:5432/todo_list?sslmode=disable", "up" ]

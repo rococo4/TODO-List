@@ -19,24 +19,30 @@ spec:
             - containerPort: 8080
           env:
             - name: DATABASE_URL
-              value: "host=postgres-db port=5432 user=postgres dbname=todo_list sslmode=disable password=1234"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: database_value
             - name: PORT
               value: "8080"
       initContainers:
         - name: migrate
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: database_url
           image: migrate/migrate:latest
           command:
-            - "migrate"
-            - "-path"
-            - "/migrations"
-            - "-database"
-            - "postgres://postgres:1234@postgres-db:5432/todo_list?sslmode=disable"
-            - "up"
+            - "sh"
+            - "-c"
+            - "migrate -path /migrations -database $DATABASE_URL up"
           volumeMounts:
             - name: migration-files
               mountPath: /migrations
       volumes:
         - name: migration-files
           configMap:
-            name: migrations
+            name: db-migration-files
       restartPolicy: Always

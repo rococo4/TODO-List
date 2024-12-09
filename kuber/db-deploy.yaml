@@ -19,8 +19,14 @@ spec:
             - name: POSTGRES_DB
               value: "todo_list"
             - name: POSTGRES_USER
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: database_user
             - name: POSTGRES_PASSWORD
-              value: "1234"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: database_password
           ports:
             - containerPort: 5432

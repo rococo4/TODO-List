@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-migration-files
+data:
+  20241014162858_user_table.up.sql: |
+    CREATE TABLE users (
+                           id SERIAL PRIMARY KEY,
+                           username VARCHAR(50) UNIQUE NOT NULL,
+                           password VARCHAR(60),
+                           first_name VARCHAR(50),
+                           last_name VARCHAR(50),
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  20241014162906_task_table.up.sql: |
+    CREATE TABLE tasks (
+                           id SERIAL PRIMARY KEY,
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           expired_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           description TEXT,
+                           user_id SERIAL NOT NULL,
+                           FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                           name VARCHAR(50)
+    );

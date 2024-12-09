@@ -7,18 +7,22 @@ spec:
     spec:
       containers:
         - name: migrate
-          image: migrate/migrate:latest  # Docker-образ с инструментом миграций
+          image: migrate/migrate:latest
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: database_url
           command:
-            [ "migrate",
-              "-path", "/database",
-              "-database", "postgres://postgres:1234@postgres-db:5432/todo_list?sslmode=disable",
-              "up"
-            ]
+            - "sh"
+            - "-c"
+            - "migrate -path /database -database $DATABASE_URL up"
           volumeMounts:
             - name: migration-files
               mountPath: /database
       volumes:
         - name: migration-files
-          hostPath:
-            path: /Users/mac/GolandProjects/TODO-List/internal/db/migrations
+          configMap:
+            name: db-migration-files
       restartPolicy: Never

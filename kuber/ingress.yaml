@@ -14,7 +14,18 @@ spec:
                 name: app
                 port:
                   number: 8080
+    - host: another-todo-list.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                  name: app-1
+                  port:
+                    number: 8081
   tls:
     - hosts:
         - todo-list.com
+        - another-todo-list.com
       secretName: tls-secret

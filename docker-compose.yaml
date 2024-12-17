@@ -20,7 +20,8 @@ services:
       POSTGRES_PASSWORD: 1234     # Пароль для пользователя PostgreSQL
       POSTGRES_DB: todo_list      # Имя базы данных, которую нужно создать
     ports:
-      - "5432:5432"              # Проброс порта PostgreSQL
+      - "5433:5432"              # Проброс порта PostgreSQL на 5433 вместо 5432
+
   migrate:
     image: migrate/migrate
     depends_on:

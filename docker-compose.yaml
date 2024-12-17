@@ -3,24 +3,24 @@ version: '3.8'
 services:
   app:
     build:
-      context: .               # Укажите путь к вашему Dockerfile
-      dockerfile: Dockerfile    # Укажите имя вашего Dockerfile, если оно отличается
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"             # Проброс порта
+      - "8080:8080"
     environment:
       - DATABASE_URL=host=postgres-db port=5432 user=postgres dbname=todo_list sslmode=disable password=1234
       - PORT=8080
     depends_on:
-      - postgres-db             # Зависимость от базы данных
+      - postgres-db
 
   postgres-db:
-    image: postgres:latest      # Используем последний образ PostgreSQL
+    image: postgres:latest
     environment:
-      POSTGRES_USER: postgres    # Имя пользователя PostgreSQL
-      POSTGRES_PASSWORD: 1234     # Пароль для пользователя PostgreSQL
-      POSTGRES_DB: todo_list      # Имя базы данных, которую нужно создать
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: todo_list
     ports:
-      - "5433:5432"              # Проброс порта PostgreSQL на 5433 вместо 5432
+      - "5433:5432"
 
   migrate:
     image: migrate/migrate

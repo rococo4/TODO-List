@@ -36,6 +36,19 @@ func Run() {
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	r := gin.Default()
+
+	r.GET("/healthz", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
+	r.GET("/ready", func(c *gin.Context) {
+		err := database.Ping()
+		if err != nil {
+			c.JSON(500, gin.H{"status": "unhealthy"})
+			return
+		}
+		c.JSON(200, gin.H{"status": "ready"})
+	})
 	userHandler.RegisterEndpointsForUser(r)
 	taskHandler.RegisterEndpointsForTasks(r)
 	err = r.Run(":" + port)

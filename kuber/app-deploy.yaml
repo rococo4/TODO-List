@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: rococo44/todo_list:latest
+          image: rococo4/todo_list:latest
           ports:
             - containerPort: 8080
           env:
@@ -25,6 +25,18 @@ spec:
                   key: database_value
             - name: PORT
               value: "8080"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
       initContainers:
         - name: migrate
           env:

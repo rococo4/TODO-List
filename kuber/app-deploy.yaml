@@ -25,6 +25,8 @@ spec:
                   key: database_value
             - name: PORT
               value: "8080"
+            - name: LOKI_URL
+              value: "http://loki:3100"
           livenessProbe:
             httpGet:
               path: /healthz

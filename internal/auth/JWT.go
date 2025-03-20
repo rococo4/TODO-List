@@ -82,7 +82,7 @@ func GetUserIdFromJwt(token string) (int, error) {
 
 func VerifyToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.Request.Header.Get("Authorization") // получение заголовка Authorization
+		authHeader := c.Request.Header.Get("Authorization")
 
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "no token provided"})

@@ -59,6 +59,7 @@ func (service *TaskService) CreateTask(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, taskResponse)
 }
+
 func (service *TaskService) GetTask(context *gin.Context) {
 	taskId, err := strconv.Atoi(context.Param("taskId"))
 	if err != nil {
@@ -72,4 +73,19 @@ func (service *TaskService) GetTask(context *gin.Context) {
 	userEntity, err := service.userRepository.Find(taskEntity.UserId)
 	taskResponse, err := converter.ConvertTaskEntityToTaskResponse(taskEntity, userEntity)
 	context.JSON(http.StatusOK, taskResponse)
+}
+func (service *TaskService) DeleteTask(context *gin.Context) {
+	taskId, err := strconv.Atoi(context.Param("taskId"))
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
+		return
+	}
+
+	err = service.taskRepository.Delete(taskId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Task deleted successfully"})
 }

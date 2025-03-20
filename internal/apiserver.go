@@ -3,19 +3,26 @@ package internal
 import (
 	"TODO-List/internal/db"
 	"TODO-List/internal/handler"
+	"TODO-List/internal/logger"
+	meth "TODO-List/internal/prometheus"
 	"TODO-List/internal/repository/task"
 	"TODO-List/internal/repository/user"
 	"TODO-List/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
+	"net/http"
 	"os"
+	"time"
 )
 
 func Run() {
 
 	port := os.Getenv("PORT")
 	log.Printf("server running on port ----------------------%s", port)
+	lokiURL := os.Getenv("LOKI_URL")
+	logger := logger.NewLokiLogger("barebuXxX_1337", 1, lokiURL)
 	database, err := db.LoadDatabase()
 	defer func(database *sqlx.DB) {
 		err := database.Close()
@@ -36,6 +43,16 @@ func Run() {
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	r := gin.Default()
+	meth.InitMetrics()
+
+	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		meth.RequestCounter.Inc()
+		start := time.Now()
+		logger.Log("Got request from prometheus", "info")
+		promhttp.Handler().ServeHTTP(w, r)
+		duration := time.Since(start).Seconds()
+		meth.HttpDuration.WithLabelValues(r.Method, "200").Observe(duration)
+	})
 
 	r.GET("/healthz", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})

@@ -30,3 +30,8 @@ func (r *Repository) Find(id int) (*model.Task, error) {
 	}
 	return &createdTask, nil
 }
+
+func (r *Repository) Delete(id int) error {
+	_, err := r.db.Exec("DELETE FROM tasks WHERE id=$1", id)
+	return err
+}

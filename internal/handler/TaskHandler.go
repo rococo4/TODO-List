@@ -17,4 +17,5 @@ func NewTaskHandler(service *service.TaskService) *TaskHandler {
 func (s *TaskHandler) RegisterEndpointsForTasks(r *gin.Engine) {
 	r.GET("/task/:taskId", auth.VerifyToken(), s.service.GetTask)
 	r.POST("/task", auth.VerifyToken(), s.service.CreateTask)
+	r.DELETE("/task/:taskId", auth.VerifyToken(), s.service.DeleteTask)
 }

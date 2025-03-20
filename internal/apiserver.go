@@ -12,7 +12,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
-	"net/http"
 	"os"
 	"time"
 )
@@ -44,14 +43,13 @@ func Run() {
 
 	r := gin.Default()
 	meth.InitMetrics()
-
-	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+	r.GET("/metrics", func(c *gin.Context) {
 		meth.RequestCounter.Inc()
 		start := time.Now()
 		logger.Log("Got request from prometheus", "info")
-		promhttp.Handler().ServeHTTP(w, r)
+		promhttp.Handler().ServeHTTP(c.Writer, c.Request)
 		duration := time.Since(start).Seconds()
-		meth.HttpDuration.WithLabelValues(r.Method, "200").Observe(duration)
+		meth.HttpDuration.WithLabelValues(c.Request.Method, "200").Observe(duration)
 	})
 
 	r.GET("/healthz", func(c *gin.Context) {

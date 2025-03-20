@@ -55,10 +55,13 @@ func Run() {
 	})
 
 	r.GET("/healthz", func(c *gin.Context) {
+		logger.Log("checked_health", "info")
+		meth.RequestCounter.Inc()
 		c.JSON(200, gin.H{"status": "ok"})
 	})
 
 	r.GET("/ready", func(c *gin.Context) {
+		meth.RequestCounter.Inc()
 		err := database.Ping()
 		if err != nil {
 			c.JSON(500, gin.H{"status": "unhealthy"})

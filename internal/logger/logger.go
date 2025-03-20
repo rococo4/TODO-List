@@ -3,7 +3,6 @@ package logger
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -54,12 +53,11 @@ func (l *LokiLogger) Send() {
 	if err != nil {
 		log.Fatalf("Ошибка сериализации JSON: %v", err)
 	}
-	fmt.Println(jsonData)
+	log.Println(jsonData)
 	// Отправляем POST-запрос в Loki
 	resp, err := http.Post(l.path+"/loki/api/v1/push", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Fatalf("Ошибка отправки запроса: %v", err)
 	}
 	defer resp.Body.Close()
-
 }

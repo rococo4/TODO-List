@@ -11,7 +11,7 @@ data:
     scrape_configs:
       - job_name: 'app'
         static_configs:
-          - targets: ['my-app:8080']
+          - targets: ['app:8080']
 ---
 apiVersion: v1
 kind: Service

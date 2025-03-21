@@ -53,7 +53,6 @@ func Run() {
 	})
 
 	r.GET("/healthz", func(c *gin.Context) {
-		logger.Log("checked_health", "info")
 		meth.RequestCounter.Inc()
 		c.JSON(200, gin.H{"status": "ok"})
 	})

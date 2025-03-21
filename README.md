@@ -1,7 +1,43 @@
+Сделаны все из первого пункта кроме 3 и 6
+
+Функционал todo-list, для того чтобы проверить, предлагаю сразу развернуть приложение в кубере.
+Для этого просто зааплаить все файлы в папке kuber.
+
+Из второго пункта сделано все.
+Для логов использую Локи, туда отправляю на прямую логи
+Для метрик прометеус(раз в 5 секунд)
+Для отображения также развернута графана в кубере, чтобы подключится к ней нужно прописать следующее в командой строке: 
+minikube service grafana --url. Для подключения к локи и прометеусу использовать следующие адреса
+1) prom - http://prometheus.default.svc.cluster.local:9090
+2) loki - http://loki.default.svc.cluster.local:3100
+
+
+Чтобы проверить вот примерный запрос на регистрацию:
+POST /register
 {
-  "username": "joa",
-  "password": "securepassword123",
-  "first_name": "John",
-  "last_name": "Doe"
+"username": "joa",
+"password": "securepassword123",
+"first_name": "John",
+"last_name": "Doe"
 }
-POST http://localhost:8080/register
+Далее чтобы посмотреть круды tasks нужно будет с jwt ходить по ручкам
+"/task/:taskId" - get 
+"/task" post - создание
+"/task/:taskId" - удаление
+на создание вот примерное body:
+post "/task"  
+{
+"expiredAt": "2025-03-21T12:00:00Z",
+"name": "Название задачи",
+"description": "Описание задачи"
+}
+
+
+
+
+
+
+
+
+
+

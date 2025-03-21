@@ -1,43 +1,80 @@
-Сделаны все из первого пункта кроме 3 и 6
+# TODO List
+## ЧТО СДЕЛАНО
+- Из первого все, кроме 3 и 6
+- Из второго все
+## Развёртывание в Kubernetes
 
-Функционал todo-list, для того чтобы проверить, предлагаю сразу развернуть приложение в кубере.
-Для этого просто зааплаить все файлы в папке kuber.
+Для развёртывания приложения в Kubernetes выполните команду:
+```sh
+kubectl apply -f kuber/
+```
 
-Из второго пункта сделано все.
-Для логов использую Локи, туда отправляю на прямую логи
-Для метрик прометеус(раз в 5 секунд)
-Для отображения также развернута графана в кубере, чтобы подключится к ней нужно прописать следующее в командой строке: 
-minikube service grafana --url. Для подключения к локи и прометеусу использовать следующие адреса
-1) prom - http://prometheus.default.svc.cluster.local:9090
-2) loki - http://loki.default.svc.cluster.local:3100
+## Логирование и Метрики
 
+- Логи отправляются напрямую в **Loki**.
+- Метрики собираются **Prometheus** каждые 5 секунд.
+- Для отображения используется **Grafana**, развернутая в Kubernetes.
 
-Чтобы проверить вот примерный запрос на регистрацию:
+### Доступ к Grafana, Loki и Prometheus и приложению
+
+- получение ссылки на Grafana:
+  ```sh
+  minikube service grafana --url
+  ```
+- Адрес **Prometheus**:
+  ```
+  http://prometheus.default.svc.cluster.local:9090
+  ```
+- Адрес **Loki**:
+  ```
+  http://loki.default.svc.cluster.local:3100
+  ```
+- Получение ссылки на **app**:
+  ```sh
+  minikube service app --url
+  ```
+
+## API
+
+### Регистрация пользователя
+
+#### Запрос:
+```http
 POST /register
+```
+```json
 {
-"username": "joa",
-"password": "securepassword123",
-"first_name": "John",
-"last_name": "Doe"
+  "username": "joa",
+  "password": "securepassword123",
+  "first_name": "John",
+  "last_name": "Doe"
 }
-Далее чтобы посмотреть круды tasks нужно будет с jwt ходить по ручкам
-"/task/:taskId" - get 
-"/task" post - создание
-"/task/:taskId" - удаление
-на создание вот примерное body:
-post "/task"  
+```
+
+### Работа с задачами (Tasks)
+
+Для работы с API задач требуется JWT-токен.
+
+#### Получение задачи по ID
+```http
+GET /task/:taskId
+```
+
+#### Создание задачи
+```http
+POST /task
+```
+##### Пример тела запроса:
+```json
 {
-"expiredAt": "2025-03-21T12:00:00Z",
-"name": "Название задачи",
-"description": "Описание задачи"
+  "expiredAt": "2025-03-21T12:00:00Z",
+  "name": "Название задачи",
+  "description": "Описание задачи"
 }
+```
 
-
-
-
-
-
-
-
-
+#### Удаление задачи
+```http
+DELETE /task/:taskId
+```
 
